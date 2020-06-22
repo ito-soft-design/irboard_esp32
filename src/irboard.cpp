@@ -1,0 +1,401 @@
+
+#include "irboard.h"
+#include <sstream>
+
+// #define IRBOARD_DEBUG
+
+Irboard::Irboard(int portno)
+{
+    _portNo = portno;
+    _state = IRBOARD_STATE_INITIAL;
+#ifdef IRBOARD_DEBUG
+    Serial.println("initial");
+#endif
+}
+
+bool Irboard::addAP(const char* ssid, const char *passphrase)
+{
+  return _wifiMulti.addAP(ssid, passphrase);
+}
+
+void Irboard::begin()
+{
+    terminate();
+    _recBuf = "";
+}
+
+void Irboard::update()
+{
+    _changed = false;
+    switch(_state) {
+    case IRBOARD_STATE_INITIAL:
+        state_initial();
+        break;
+    case IRBOARD_STATE_CONNECTING:
+        state_connecting();
+        break;
+    case IRBOARD_STATE_LISTEN:
+        state_listen();
+        break;
+    case IRBOARD_STATE_CONNECTED:
+        state_connected();
+        break;
+    case IRBOARD_STATE_CLOSED:
+        state_closed();
+        break;
+    }
+}
+
+void Irboard::resetPermission()
+{
+    short *ptr = devSd;
+    for(int i = 0; i < IRBOARD_SIZE_SD; i++) {
+        *ptr++ = 0;
+    }
+}
+
+void Irboard::set_state(int state)
+{
+    _state = state;
+    _changed = true;
+}
+
+void Irboard::state_initial()
+{
+    set_state(IRBOARD_STATE_CONNECTING);
+#ifdef IRBOARD_DEBUG
+    Serial.println("connecting");
+#endif
+}
+
+void Irboard::state_connecting()
+{
+    if (_wifiMulti.run() == WL_CONNECTED) {
+        if (_server == false) {
+            _server = WiFiServer(_portNo, 1);
+            _server.begin();
+        }
+        set_state(IRBOARD_STATE_LISTEN);
+#ifdef IRBOARD_DEBUG
+        Serial.println("listen");
+#endif
+        if (_verbose) {
+            Serial.println(WiFi.SSID());
+            Serial.println(WiFi.localIP());
+        }
+    }
+}
+
+bool Irboard::check_connection()
+{
+    if (_wifiMulti.run() != WL_CONNECTED) {
+        terminate();
+        return false;
+    }
+    return true;
+}
+
+void Irboard::terminate()
+{
+    set_state(IRBOARD_STATE_CONNECTING);
+#ifdef IRBOARD_DEBUG
+    Serial.println("connecting");
+#endif
+    if (_client) {
+        _client.stop();
+        _client.~WiFiClient();
+    }
+    if (_server) {
+        _server.stopAll();
+        _server.~WiFiServer();
+    }
+}
+
+void Irboard::state_listen()
+{
+    if (check_connection() == false) { return; }
+
+    _client = _server.available();
+    if (_client) {
+        set_state(IRBOARD_STATE_CONNECTED);
+#ifdef IRBOARD_DEBUG
+        Serial.println("connected");
+#endif
+    }
+}
+
+void Irboard::state_connected()
+{
+    if (check_connection() == false) { return; }
+
+    if (_client.connected()) {
+        if (_client.available()) {
+            char c = _client.read();
+#ifdef IRBOARD_DEBUG
+            Serial.write(c);
+#endif
+            _recBuf += c;
+            if (c == 0x0a) {
+                std::string r = response(_recBuf);
+                _client.print(r.c_str());
+                _client.print("\r\n");
+                _client.flush();
+#ifdef IRBOARD_DEBUG
+                Serial.println(r.c_str());
+#endif
+                _recBuf = "";
+            }
+        }
+    } else {
+        set_state(IRBOARD_STATE_CLOSED);
+#ifdef IRBOARD_DEBUG
+        Serial.println("closed");
+#endif
+    }
+}
+
+void Irboard::state_closed()
+{
+    _client.stop();
+    set_state(IRBOARD_STATE_CONNECTING);
+#ifdef IRBOARD_DEBUG
+    Serial.println("connecting");
+#endif
+}
+
+std::string Irboard::response(std::string str)
+{
+    int p = str.find_first_of(" ");
+    if (p == std::string::npos) { return "E1"; }
+
+    std::string cmd = str.substr(0, p);
+    std::string opcode = str.substr(p + 1);
+    if (cmd == "RDS") {
+        return rds_response(opcode);
+    } else if (cmd == "WRS") {
+        return wrs_response(opcode);
+    } else if (cmd == "WR") {
+        return wr_response(opcode);
+    } else if (cmd == "ST") {
+        return st_response(opcode);
+    } else if (cmd == "RS") {
+        return rs_response(opcode);
+    }
+    return "E1";
+}
+
+
+std::string Irboard::rds_response(std::string opcode)
+{
+    int p = opcode.find_first_of(" ");
+    if (p == std::string::npos) { return "E1"; }
+    std::string dev = opcode.substr(0, p);
+    std::string str = opcode.substr(p + 1);
+
+    int vBase = 10;
+    p = dev.find_first_of(".");
+    if (p != std::string::npos) {
+        if (dev.substr(p + 1, 1) == "H") {
+            vBase = 16;
+        }
+        dev = dev.substr(0, p);
+    }
+
+    int num = atoi(str.c_str());
+
+    std::string r = "";
+
+    short *ptr = vptr_for_dev(dev, num);
+    if (ptr == NULL) { return "E0"; }
+
+    if (vBase == 10) {
+        for (int i = 0; i < num; i++) {
+            if (i != 0) {
+                r += " ";
+            }
+            std::stringstream ss;
+            ss << std::dec << *ptr++;
+            r += ss.str();
+        }
+    } else {
+        for (int i = 0; i < num; i++) {
+            if (i != 0) {
+                r += " ";
+            }
+            //char buf[5] = { '\0' };
+            //sprintf(buf, "%04X", *ptr++);
+            //r += std::string(buf);
+            std::stringstream ss;
+            ss << std::uppercase << std::hex << *ptr++;
+            r += ss.str();
+        }
+    }
+    return r;
+}
+
+std::string Irboard::wrs_response(std::string opcode)
+{
+    int p = opcode.find_first_of(" ");
+    if (p == std::string::npos) { return "E1"; }
+    std::string dev = opcode.substr(0, p);
+    std::string str = opcode.substr(p + 1);
+    int vBase = 10;
+    p = dev.find_first_of(".");
+    if (p != std::string::npos) {
+        if (dev.substr(p + 1, 1) == "H") {
+            vBase = 16;
+        }
+        dev = dev.substr(0, p);
+    }
+
+    p = str.find_first_of(" ");
+    if (p == std::string::npos) { return "E1"; }
+    int num = atoi(str.substr(0, p).c_str());
+
+    str = str.substr(p + 1);
+
+    short *ptr = vptr_for_dev(dev, num);
+    if (ptr == NULL) { return "E0"; }
+
+    for (int i = 0; i < num - 1; i++) {
+        p = str.find_first_of(" ");
+        if (p == std::string::npos) { return "E1"; }
+        *ptr++ = (short)strtol(str.substr(0, p).c_str(), NULL, vBase);
+        str = str.substr(p + 1);
+    }
+    *ptr++ = (short)strtol(str.substr(0, p).c_str(), NULL, vBase);
+
+    if (_sd_dev == false) _changed = true;
+    return "OK";
+}
+
+std::string Irboard::wr_response(std::string opcode)
+{
+    int p = opcode.find_first_of(" ");
+    if (p == std::string::npos) { return "E1"; }
+    std::string dev = opcode.substr(0, p);
+    std::string str = opcode.substr(p + 1);
+    
+    int vBase = 10;
+    p = dev.find_first_of(".");
+    if (p != std::string::npos) {
+        if (dev.substr(p + 1, 1) == "H") {
+            vBase = 16;
+        }
+        dev = dev.substr(0, p);
+    }
+
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr == NULL) { return "E0"; }
+
+    *ptr = (short)strtol(str.c_str(), NULL, vBase);
+
+    if (_sd_dev == false) _changed = true;
+    return "OK";
+}
+
+std::string Irboard::st_response(std::string opcode)
+{
+    std::string dev = opcode;
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr == NULL) { return "E0"; }
+
+    *ptr = 1;
+    
+    if (_sd_dev == false) _changed = true;
+    return "OK";
+}
+
+std::string Irboard::rs_response(std::string opcode)
+{
+    std::string dev = opcode;
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr == NULL) { return "E0"; }
+
+    *ptr = 0;
+    
+    if (_sd_dev == false) _changed = true;
+    return "OK";
+}
+
+bool Irboard::boolValue(std::string dev)
+{
+    short *ptr = vptr_for_dev(dev, 1);
+    return ptr ? *ptr != 0 : false;
+}
+
+void Irboard::setBoolValue(std::string dev, bool value)
+{
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr) {
+        *ptr = value ? 1 : 0;
+    }
+}
+
+short Irboard::shortValue(std::string dev)
+{
+    short *ptr = vptr_for_dev(dev, 1);
+    return ptr ? *ptr : 0;
+}
+
+void Irboard::setShortValue(std::string dev, short value)
+{
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr) {
+        *ptr = value;
+    }
+}
+
+int Irboard::intValue(std::string dev)
+{
+    int v = 0;
+    short *ptr = vptr_for_dev(dev, 2);
+    if (ptr) {
+        v = (int)*ptr++;
+        v |= (int)*ptr << 16;
+    }
+    return ptr ? *ptr : 0;
+}
+
+void Irboard::setIntValue(std::string dev, int value)
+{
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr) {
+        *ptr++ = value;
+        *ptr = value >> 16;
+    }
+}
+
+
+short *Irboard::vptr_for_dev(std::string dev, int size)
+{
+    _sd_dev = false;
+    std::string s2 = dev.substr(0, 2);
+    int no2 = atoi(dev.substr(2).c_str());
+    if (s2 == "SD") {
+        _sd_dev = true;
+        if (no2 + size > IRBOARD_SIZE_SD) return NULL;
+        return &(devSd[no2]);
+    }
+
+    std::string s1 = dev.substr(0, 1);
+    int no1 = atoi(dev.substr(1).c_str());
+    if (s1 == "X") {
+        if (no1 + size > IRBOARD_SIZE_X) return NULL;
+        return &(devX[no1]);
+    } else if (s1 == "Y") {
+        if (no1 + size > IRBOARD_SIZE_Y) return NULL;
+        return &(devY[no1]);
+    } else if (s1 == "M") {
+        if (no1 + size > IRBOARD_SIZE_M) return NULL;
+        return &(devM[no1]);
+    } else if (s1 == "H") {
+        if (no1 + size > IRBOARD_SIZE_H) return NULL;
+        return &(devH[no1]);
+    } else if (s1 == "D") {
+        if (no1 + size > IRBOARD_SIZE_D) return NULL;
+        return &(devD[no1]);
+    }
+
+    return NULL;
+}
