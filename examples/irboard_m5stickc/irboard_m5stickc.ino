@@ -2,7 +2,7 @@
 #include <irboard.h>
 
 const char *ssid = "ssid";
-const charb*password = "password";
+const char *password = "password";
 
 Irboard irboard = Irboard();
 
