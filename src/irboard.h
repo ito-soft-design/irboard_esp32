@@ -25,6 +25,7 @@
 
 #include <WiFi.h>
 #include <WiFiMulti.h>
+#include <WiFiAP.h>
 #include <string>
 
 #define IRBOARD_STATE_INITIAL       0
@@ -45,7 +46,7 @@ class Irboard {
 
     public:
         Irboard(int portNo = 5555);
-        void begin();
+        void begin(bool apMode = false);
         void update();
         int state() { return _state; }
         int portNo() { return _portNo; }
@@ -70,6 +71,7 @@ class Irboard {
         bool _changed;
         bool _sd_dev;
         bool _verbose;
+        bool _apMode;
 
         WiFiServer _server;
         WiFiClient _client;
