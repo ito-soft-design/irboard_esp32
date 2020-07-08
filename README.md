@@ -16,7 +16,7 @@ irBoardはiPodやiPhoneを[PLC(Programable logic controller)](https://ja.wikiped
 
 ## 使い方
 
-1. irboar.hをインクルードします
+1. irboard.hをインクルードします
 2. Irboardのインスタンスを生成します
 3. addAP()で接続するWiFiのssidとpasswordを設定します。  
   WiFiMultiを利用してますのでaddAP()を繰り返し複数のアクセスポイントを登録できます。
