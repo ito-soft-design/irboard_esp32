@@ -62,6 +62,8 @@ class Irboard {
         void setShortValue(std::string dev, short value);
         int intValue(std::string dev);
         void setIntValue(std::string dev, int value);
+        float floatValue(std::string dev);
+        void setFloatValue(std::string dev, float value);
 
         bool isChanged() { return _changed; }
 

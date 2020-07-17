@@ -394,6 +394,16 @@ void Irboard::setIntValue(std::string dev, int value)
     }
 }
 
+float Irboard::floatValue(std::string dev)
+{
+    int value = intValue(dev);
+    return *((float *)&value);
+}
+
+void Irboard::setFloatValue(std::string dev, float value)
+{
+    setIntValue(dev, *((int *)&value));
+}
 
 short *Irboard::vptr_for_dev(std::string dev, int size)
 {
