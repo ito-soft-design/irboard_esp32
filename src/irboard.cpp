@@ -40,9 +40,10 @@ bool Irboard::addAP(const char* ssid, const char *passphrase)
   return _wifiMulti.addAP(ssid, passphrase);
 }
 
-void Irboard::begin()
+void Irboard::begin(bool apMode)
 {
     terminate();
+    _apMode = apMode;
     _recBuf = "";
 }
 
@@ -92,7 +93,7 @@ void Irboard::state_initial()
 
 void Irboard::state_connecting()
 {
-    if (_wifiMulti.run() == WL_CONNECTED) {
+    if (_apMode || _wifiMulti.run() == WL_CONNECTED) {
         if (_server == false) {
             _server = WiFiServer(_portNo, 1);
             _server.begin();
@@ -102,14 +103,19 @@ void Irboard::state_connecting()
         Serial.println("listen");
 #endif
         if (_verbose) {
-            Serial.println(WiFi.SSID());
-            Serial.println(WiFi.localIP());
+            if (_apMode) {
+                Serial.print(WiFi.softAPIP());
+            } else {
+                Serial.println(WiFi.SSID());
+                Serial.println(WiFi.localIP());
+            }
         }
     }
 }
 
 bool Irboard::check_connection()
 {
+    if (_apMode) return true;
     if (_wifiMulti.run() != WL_CONNECTED) {
         terminate();
         return false;
@@ -388,6 +394,16 @@ void Irboard::setIntValue(std::string dev, int value)
     }
 }
 
+float Irboard::floatValue(std::string dev)
+{
+    int value = intValue(dev);
+    return *((float *)&value);
+}
+
+void Irboard::setFloatValue(std::string dev, float value)
+{
+    setIntValue(dev, *((int *)&value));
+}
 
 short *Irboard::vptr_for_dev(std::string dev, int size)
 {

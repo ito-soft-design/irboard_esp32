@@ -1,8 +1,12 @@
 #include <M5Atom.h>
 #include <irboard.h>
 
+// If you want to act as an ap mode, uncomment here.
+// #define ACTS_AS_AP_MODE
+
 Irboard irboard = Irboard();
 
+// Set your ssid and password here.
 const char *ssid = "ssid";
 const char *password = "password";
 
@@ -32,12 +36,19 @@ void setup() {
     M5.begin(true, false, true);
     Serial.begin(115200);
 
-    // set wifi ssid & password
-    irboard.addAP(ssid, password);
-    // show ip address to terminal
+    // show IP address to the terminal when it's established connection.
     irboard.setVerbose(true);
-    // 
+
+    // configure wifi connection
+#ifdef ACTS_AS_AP_MODE
+    WiFi.softAP(ssid, password);
+    Serial.print(WiFi.softAPIP());
+     // If set true, it acts as the ap mode.
+    irboard.begin(true);
+#else
+    irboard.addAP(ssid, password);
     irboard.begin();
+#endif
 
     // set default color
     irboard.setShortValue("D1", 0x80);      // Red

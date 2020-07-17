@@ -1,4 +1,4 @@
-#include <M5StickC.h>
+#include <M5Stack.h>
 #include <irboard.h>
 
 // If you want to act as an ap mode, uncomment here.
@@ -16,16 +16,11 @@ short color_g = 0;
 short color_b = 0;
 
 void setup() {
-    M5.begin();
+    M5.begin();                   // M5STACK INITIALIZE
     Serial.begin(115200);
-
-    M5.Axp.ScreenBreath(10);
-    M5.Lcd.setRotation(3);
+    M5.Lcd.setBrightness(200);    // BRIGHTNESS = MAX 255
+    M5.Lcd.fillScreen(BLACK);     // CLEAR SCREEN
     M5.Lcd.setTextSize(2);
-    M5.Lcd.fillScreen(BLACK);
-
-    pinMode(GPIO_NUM_10, OUTPUT);
-    digitalWrite(GPIO_NUM_10, HIGH);
 
     // show IP address to the terminal when it's established connection.
     irboard.setVerbose(true);
@@ -44,10 +39,9 @@ void setup() {
 
 void display_info()
 {
-    uint16_t c = M5.Lcd.color565(color_r, color_g, color_b);
-    M5.Lcd.fillScreen(c);
-    M5.Lcd.setCursor(0, 0, 1);
+    M5.Lcd.fillScreen(M5.Lcd.color565(color_r, color_g, color_b));
 
+    M5.Lcd.setCursor(0, 0);
     M5.Lcd.print("IP:");
 #ifdef ACTS_AS_AP_MODE
     M5.Lcd.println(WiFi.softAPIP());
@@ -61,8 +55,8 @@ void display_info()
 void loop() {
     irboard.update();
 
-    bool x0 = irboard.boolValue("X0");
-    digitalWrite(GPIO_NUM_10, x0 ? LOW : HIGH);
+    M5.update();
+    bool x0 = M5.BtnA.isPressed() || M5.BtnB.isPressed() || M5.BtnC.isPressed();
 
     irboard.setBoolValue("Y0", x0);
     value_a = irboard.shortValue("D0");
