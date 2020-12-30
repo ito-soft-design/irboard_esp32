@@ -125,7 +125,8 @@ bool Irboard::check_connection()
 
 void Irboard::terminate()
 {
-    set_state(IRBOARD_STATE_CONNECTING);
+    set_state(IRBOARD_STATE_INITIAL);
+    _changed = false;
 #ifdef IRBOARD_DEBUG
     Serial.println("connecting");
 #endif
@@ -137,6 +138,7 @@ void Irboard::terminate()
         _server.stopAll();
         _server.~WiFiServer();
     }
+    WiFi.disconnect();
 }
 
 void Irboard::state_listen()

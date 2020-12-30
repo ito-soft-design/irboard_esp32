@@ -60,6 +60,14 @@ void display_info()
 
 void loop() {
     irboard.update();
+    if (irboard.state() == IRBOARD_STATE_INITIAL) {
+        // If the state is IRBOARD_STATE_INITIAL, the connection is closed. You should set SSID again.
+#ifdef ACTS_AS_AP_MODE
+        WiFi.softAP(ssid, password);
+#else
+        irboard.addAP(ssid, password);
+#endif
+    }
 
     bool x0 = irboard.boolValue("X0");
     digitalWrite(GPIO_NUM_10, x0 ? LOW : HIGH);
