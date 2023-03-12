@@ -384,7 +384,7 @@ int Irboard::intValue(std::string dev)
         v = (int)*ptr++;
         v |= (int)*ptr << 16;
     }
-    return ptr ? *ptr : 0;
+    return ptr ? v : 0;
 }
 
 void Irboard::setIntValue(std::string dev, int value)
