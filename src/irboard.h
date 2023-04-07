@@ -96,6 +96,7 @@ class Irboard {
         void terminate();
         std::string response(std::string str);
         std::string rds_response(std::string opcode);
+        std::string rd_response(std::string opcode);
         std::string wrs_response(std::string opcode);
         std::string wr_response(std::string opcode);
         std::string st_response(std::string opcode);

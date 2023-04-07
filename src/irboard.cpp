@@ -202,6 +202,8 @@ std::string Irboard::response(std::string str)
     std::string opcode = str.substr(p + 1);
     if (cmd == "RDS") {
         return rds_response(opcode);
+    } else if (cmd == "RD") {
+        return rd_response(opcode);
     } else if (cmd == "WRS") {
         return wrs_response(opcode);
     } else if (cmd == "WR") {
@@ -259,6 +261,36 @@ std::string Irboard::rds_response(std::string opcode)
             ss << std::uppercase << std::hex << *ptr++;
             r += ss.str();
         }
+    }
+    return r;
+}
+
+std::string Irboard::rd_response(std::string opcode)
+{
+    std::string dev = opcode;
+
+    int vBase = 10;
+    int p = dev.find_first_of(".");
+    if (p != std::string::npos) {
+        if (dev.substr(p + 1, 1) == "H") {
+            vBase = 16;
+        }
+        dev = dev.substr(0, p);
+    }
+
+    std::string r = "";
+
+    short *ptr = vptr_for_dev(dev, 1);
+    if (ptr == NULL) { return "E0"; }
+
+    if (vBase == 10) {
+        std::stringstream ss;
+        ss << std::dec << *ptr++;
+        r += ss.str();
+    } else {
+        std::stringstream ss;
+        ss << std::uppercase << std::hex << *ptr++;
+        r += ss.str();
     }
     return r;
 }
