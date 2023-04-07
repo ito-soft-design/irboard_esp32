@@ -56,13 +56,14 @@ irBoard Library for ESP32ではLadder Driveの仮想的なPLCのデバイスを�
 |D00 - D127|short|データメモリ(16bit)|
 |SD00 - SD32|short|irBoardとのインタラクションに使用されます|
 
-デバイスのサイズば[irboard.h](https://github.com/ito-soft-design/irboard_esp32/blob/master/src/irboard.h#L36)で定義していますのでここを変えれば変更できます。
+デバイスのサイズば[irboard.h](https://github.com/ito-soft-design/irboard_esp32/blob/master/src/irboard.h#L37)で定義しています。  
+コンパイルオプションで再定義するか直接このファイル変えることでば変更できます。
 
 PLCではないので、この様なデバイスが実際にあるわけではなく、イメージとしてはデバイス名をキーとしたHashがあってそこに読み書きしている様な感じです。
 
 6. update()でirBoardとの送受信処理を行いデバイスの値を更新します。
 7. isChanged()で値に変化があったか確認でき、変化がある時に画面などを更新する様にできます。
-8. 値を読み込む場合はデバイスの型に合わせてboolValue()やshortValue()、intValue()、floatValue()にデバイス名を指定して呼び出します。intValueとfloatValueは2ワード分使用します。M0を指定した場合はM0と次のM1を繋げて32bitとして扱います。
+8. 値を読み込む場合はデバイスの型に合わせてboolValue()やshortValue()、intValue()、floatValue()にデバイス名を指定して呼び出します。intValueとfloatValueは2ワード分使用します。D0を指定した場合はD0と次のD1を繋げて32bitとして扱います。
 9. 書き込みの場合はsetBoolValue(,)やsetShortValue(,)、setIntValue(,)、setFloatValue(,)を使います。
 
 ```
@@ -96,7 +97,6 @@ irBoardについては公式サイトやドキュメンをご覧ください。
 ### TODO
 
 - textの扱い
-- M5Stackのスケッチ例追加
 
 ### ライセンス
 
