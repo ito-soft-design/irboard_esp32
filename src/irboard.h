@@ -34,12 +34,24 @@
 #define IRBOARD_STATE_CONNECTED     3
 #define IRBOARD_STATE_CLOSED        4
 
+#ifndef IRBOARD_SIZE_X
 #define IRBOARD_SIZE_X              32
+#endif
+#ifndef IRBOARD_SIZE_Y
 #define IRBOARD_SIZE_Y              32
+#endif
+#ifndef IRBOARD_SIZE_M
 #define IRBOARD_SIZE_M              32
+#endif
+#ifndef IRBOARD_SIZE_H
 #define IRBOARD_SIZE_H              32
+#endif
+#ifndef IRBOARD_SIZE_D
 #define IRBOARD_SIZE_D              128
+#endif
+#ifndef IRBOARD_SIZE_SD
 #define IRBOARD_SIZE_SD             32
+#endif
 
 
 class Irboard {
@@ -79,12 +91,12 @@ class Irboard {
         WiFiClient _client;
         WiFiMulti _wifiMulti;
         std::string _recBuf;
-        short devX[IRBOARD_SIZE_X];
-        short devY[IRBOARD_SIZE_Y];
-        short devM[IRBOARD_SIZE_M];
-        short devH[IRBOARD_SIZE_H];
-        short devD[IRBOARD_SIZE_D];
-        short devSd[IRBOARD_SIZE_SD];
+        uint16_t devX[IRBOARD_SIZE_X];
+        uint16_t devY[IRBOARD_SIZE_Y];
+        uint16_t devM[IRBOARD_SIZE_M];
+        uint16_t devH[IRBOARD_SIZE_H];
+        uint16_t devD[IRBOARD_SIZE_D];
+        uint16_t devSd[IRBOARD_SIZE_SD];
         
         void set_state(int state);
         void state_initial();
@@ -101,7 +113,7 @@ class Irboard {
         std::string wr_response(std::string opcode);
         std::string st_response(std::string opcode);
         std::string rs_response(std::string opcode);
-        short *vptr_for_dev(std::string dev, int size);
+        uint16_t *vptr_for_dev(std::string dev, int size);
 };
 
 #endif
