@@ -40,14 +40,17 @@ void setup() {
     irboard.addAP(ssid, password);
     irboard.begin();
 #endif
+    // for permit writing
+    irboard.setShortValue("SD19", 1);
 }
 
 void display_info()
 {
-    uint16_t c = M5.Lcd.color565(color_r, color_g, color_b);
-    M5.Lcd.fillScreen(c);
-    M5.Lcd.setCursor(0, 0, 1);
+    uint16_t bg_color = M5.Lcd.color565(color_r, color_g, color_b);
+    M5.Lcd.fillScreen(bg_color);
+    M5.Lcd.setTextColor(WHITE, bg_color);
 
+    M5.Lcd.setCursor(0, 0, 1);
     M5.Lcd.print("IP:");
 #ifdef ACTS_AS_AP_MODE
     M5.Lcd.println(WiFi.softAPIP());

@@ -49,6 +49,8 @@ void setup() {
     irboard.addAP(ssid, password);
     irboard.begin();
 #endif
+    // for permit writing
+    irboard.setShortValue("SD19", 1);
 
     // set default color
     irboard.setShortValue("D1", 0x80);      // Red
