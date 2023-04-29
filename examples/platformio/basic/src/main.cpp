@@ -17,11 +17,12 @@ short color_g = 0;
 short color_b = 0;
 
 void setup() {
-    M5.begin();                   // M5STACK INITIALIZE
+    auto cfg = M5.config(); 
+    M5.begin(cfg);                // M5STACK INITIALIZE
     Serial.begin(115200);
-    M5.Lcd.setBrightness(200);    // BRIGHTNESS = MAX 255
-    M5.Lcd.fillScreen(BLACK);     // CLEAR SCREEN
-    M5.Lcd.setTextSize(2);
+    M5.Display.setBrightness(200);    // BRIGHTNESS = MAX 255
+    M5.Display.fillScreen(BLACK);     // CLEAR SCREEN
+    M5.Display.setTextSize(2);
 
     // show IP address to the terminal when it's established connection.
     irboard.setVerbose(true);
@@ -42,19 +43,19 @@ void setup() {
 
 void display_info()
 {
-    uint16_t bg_color = M5.Lcd.color565(color_r, color_g, color_b);
-    M5.Lcd.fillScreen(bg_color);
-    M5.Lcd.setTextColor(WHITE, bg_color);
+    uint16_t bg_color = M5.Display.color565(color_r, color_g, color_b);
+    M5.Display.fillScreen(bg_color);
+    M5.Display.setTextColor(WHITE, bg_color);
 
-    M5.Lcd.setCursor(0, 0);
-    M5.Lcd.print("IP:");
+    M5.Display.setCursor(0, 0);
+    M5.Display.print("IP:");
 #ifdef ACTS_AS_AP_MODE
-    M5.Lcd.println(WiFi.softAPIP());
+    M5.Display.println(WiFi.softAPIP());
 #else
-    M5.Lcd.println(WiFi.localIP());
+    M5.Display.println(WiFi.localIP());
 #endif    
-    M5.Lcd.print("A:");
-    M5.Lcd.println(value_a);
+    M5.Display.print("A:");
+    M5.Display.println(value_a);
 }
 
 void loop() {
