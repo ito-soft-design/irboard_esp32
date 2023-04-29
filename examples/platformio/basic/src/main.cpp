@@ -1,13 +1,19 @@
 #include <Arduino.h>
 #include <M5Unified.h>
+#include <FastLED.h>
 #include <irboard.h>
 
 // If you want to act as an ap mode, uncomment here.
 // #define ACTS_AS_AP_MODE
 
 // Set your ssid and password here.
-const char *ssid = "ssid";
+const char *ssid = "irBoard ESP32";
 const char *password = "password";
+
+// LED
+#define NUM_LEDS      1
+uint8_t led_pin = 255;
+static CRGB leds[NUM_LEDS];
 
 Irboard irboard = Irboard();
 
@@ -16,6 +22,37 @@ short color_r = 0;
 short color_g = 0;
 short color_b = 0;
 
+void config_board() {
+    switch(M5.getBoard()) {
+    case m5gfx::board_t::board_M5StickC:
+        pinMode(GPIO_NUM_10, OUTPUT);   // LED
+        M5.Display.setRotation(1);
+        break;
+    case m5gfx::board_t::board_M5Atom:
+    case m5gfx::board_t::board_M5StampPico:
+        FastLED.addLeds<WS2811, GPIO_NUM_27, RGB>(leds, NUM_LEDS);
+        FastLED.setBrightness(255 * 15 / 100);
+        pinMode (0, OUTPUT);
+        digitalWrite (0, LOW);
+        break;
+    }
+}
+
+void setRGBLed(CRGB color) {
+    // change RGB to GRB
+    uint8_t t = color.r;
+    color.r = color.g;
+    color.g = t;
+    leds[0] = color;
+    FastLED.show();
+}
+
+void setLed(int flag) {
+    if (M5.getBoard() == m5gfx::board_t::board_M5StickC) {
+        digitalWrite(GPIO_NUM_10, flag);   
+    }
+}
+
 void setup() {
     auto cfg = M5.config(); 
     M5.begin(cfg);                // M5STACK INITIALIZE
@@ -23,6 +60,8 @@ void setup() {
     M5.Display.setBrightness(200);    // BRIGHTNESS = MAX 255
     M5.Display.fillScreen(BLACK);     // CLEAR SCREEN
     M5.Display.setTextSize(2);
+    
+    config_board();
 
     // show IP address to the terminal when it's established connection.
     irboard.setVerbose(true);
@@ -43,19 +82,38 @@ void setup() {
 
 void display_info()
 {
-    uint16_t bg_color = M5.Display.color565(color_r, color_g, color_b);
-    M5.Display.fillScreen(bg_color);
-    M5.Display.setTextColor(WHITE, bg_color);
+    CRGB color;
 
-    M5.Display.setCursor(0, 0);
-    M5.Display.print("IP:");
+    switch(M5.getBoard()) {
+    case m5gfx::board_t::board_M5StickC:
+    case m5gfx::board_t::board_M5Stack:
+        {
+            uint16_t bg_color = M5.Display.color565(color_r, color_g, color_b);
+            M5.Display.fillScreen(bg_color);
+            M5.Display.setTextColor(WHITE, bg_color);
+
+            M5.Display.setCursor(0, 0);
+            M5.Display.print("IP:");
 #ifdef ACTS_AS_AP_MODE
-    M5.Display.println(WiFi.softAPIP());
+            M5.Display.println(WiFi.softAPIP());
 #else
-    M5.Display.println(WiFi.localIP());
+            M5.Display.println(WiFi.localIP());
 #endif    
-    M5.Display.print("A:");
-    M5.Display.println(value_a);
+            M5.Display.print("A:");
+            M5.Display.println(value_a);
+        }
+        break;
+
+    case m5gfx::board_t::board_M5Atom:
+    case m5gfx::board_t::board_M5StampPico:
+        {
+            color.r = color_r;
+            color.g = color_g;
+            color.b = color_b;
+            setRGBLed(color);
+        }
+        break;
+    }
 }
 
 void loop() {
@@ -70,9 +128,11 @@ void loop() {
     }
 
     M5.update();
-    bool x0 = M5.BtnA.isPressed() || M5.BtnB.isPressed() || M5.BtnC.isPressed();
+    bool pressed = M5.BtnA.isPressed() || M5.BtnB.isPressed() || M5.BtnC.isPressed();
 
-    irboard.setBoolValue("Y0", x0);
+    irboard.setBoolValue("Y0", pressed);
+    setLed(irboard.boolValue("X0") ? LOW : HIGH);
+
     value_a = irboard.shortValue("D0");
 
     color_r = irboard.shortValue("D1");
