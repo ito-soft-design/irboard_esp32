@@ -12,15 +12,14 @@ const char *password = "password";
 
 // LED
 #define NUM_LEDS      1
-uint8_t led_pin = 255;
 static CRGB leds[NUM_LEDS];
 
-Irboard irboard = Irboard();
+static Irboard irboard = Irboard();
 
-short value_a = 0;
-short color_r = 0;
-short color_g = 0;
-short color_b = 0;
+static short value_a = 0;
+static short color_r = 0;
+static short color_g = 0;
+static short color_b = 0;
 
 void config_board() {
     switch(M5.getBoard()) {
