@@ -93,13 +93,15 @@ void display_info()
             M5.Display.setTextColor(WHITE, bg_color);
 
             M5.Display.setCursor(0, 0);
-            M5.Display.print("IP:");
+            M5.Display.println("IP:");
+            M5.Display.print("  ");
 #ifdef ACTS_AS_AP_MODE
             M5.Display.println(WiFi.softAPIP());
 #else
             M5.Display.println(WiFi.localIP());
 #endif    
-            M5.Display.print("A:");
+            M5.Display.println("");
+            M5.Display.print("A: ");
             M5.Display.println(value_a);
         }
         break;
