@@ -31,8 +31,8 @@ void config_board() {
     case m5gfx::board_t::board_M5StampPico:
         FastLED.addLeds<WS2811, GPIO_NUM_27, RGB>(leds, NUM_LEDS);
         FastLED.setBrightness(255 * 15 / 100);
-        pinMode (0, OUTPUT);
-        digitalWrite (0, LOW);
+        pinMode (GPIO_NUM_0, OUTPUT);
+        digitalWrite (GPIO_NUM_0, LOW);
         break;
     }
 }
