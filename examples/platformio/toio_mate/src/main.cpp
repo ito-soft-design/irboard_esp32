@@ -11,7 +11,7 @@ static Toio toio;
 static ToioCore* toiocore = nullptr;
 
 static int toio_throttle = 10;
-static int toio_steering = 10;
+static int toio_steering = 50;
 static int toio_direction = 0;
 
 #define DIR_FOWORD      1
