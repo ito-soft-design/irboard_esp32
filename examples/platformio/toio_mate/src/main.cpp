@@ -266,5 +266,20 @@ void loop() {
                          (irboard.boolValue("X3") ? DIR_TURN_LEFT : 0);
     }
 
+    // Fail-safe: Stop toio if the connection with irBoard was broken.
+    static unsigned long healthy_at = millis();
+    static int health_state = false;
+    unsigned long now = millis();
+    if (irboard.state() == IRBOARD_STATE_CONNECTED) {
+        int state = irboard.intValue("SD17") & 0x2;
+        if (health_state != state) {
+            health_state = state;
+            healthy_at = now;
+        }
+    }
+    if ((now - healthy_at) >= 3000) {
+        toio_direction = 0;
+    }
+
     delay(10);
 }
