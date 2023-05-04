@@ -120,6 +120,7 @@ static void display_task(void*)
             M5.Display.setCursor(hw + 8, 8);
             M5.Display.print("toio");
             M5.Display.endWrite();
+            delay(1);
         }
 
         if (connected_changes) {
@@ -142,6 +143,7 @@ static void display_task(void*)
             M5.Display.setCursor(12, 12);
             M5.Display.print("irBoard");
             M5.Display.endWrite();
+            delay(1);
         }
 
         if (direction_changes) {
@@ -159,7 +161,6 @@ static void display_task(void*)
             y += 40;
             M5.Display.drawLine(x, y, x + 40, y - 40);
 
-            Serial.printf("%X\n", direction);
             if ((direction & DIR_FOWORD) == 0) {
                 int x = hw - 20;
                 int y = hh - 40;
@@ -191,6 +192,7 @@ static void display_task(void*)
                 M5.Display.fillTriangle(hw - 2, hh, x - 1, y, x - 1, y + 40);
             }
             M5.Display.endWrite();
+            delay(1);
         }
         
         // update state
@@ -205,13 +207,11 @@ static void display_task(void*)
             connected_changes = true;
         }
 
-        /*
         // 制御が遅れるので方向の描画はしない。
         if (direction != toio_direction) {
             direction = toio_direction;
             direction_changes = true;
         }
-        */
 
         delay(100);
     }
