@@ -35,8 +35,6 @@ void setup() {
     irboard.addAP(ssid, password);
     irboard.begin();
 #endif
-    // for permit writing
-    irboard.setShortValue("SD19", 1);
 }
 
 void display_info()
