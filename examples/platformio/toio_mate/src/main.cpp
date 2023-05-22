@@ -235,9 +235,6 @@ void setup() {
     irboard.addAP(ssid, password);
     irboard.begin();
 #endif
-    // for permit writing
-    irboard.setShortValue("SD19", 1);
-
     // set default value
     irboard.setIntValue("D0", toio_throttle);
     irboard.setIntValue("D1", toio_steering);

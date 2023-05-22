@@ -22,7 +22,8 @@ irBoardはiPodやiPhoneを[PLC(Programable logic controller)](https://ja.wikiped
   WiFiMultiを利用してますのでaddAP()を繰り返し複数のアクセスポイントを登録できます。
 4. setVerbose()にtrueを渡すと接続時に割り当てられたIPアドレスをTerminalに出力します。
 5. begin()を呼び出しirBoardとの接続を開始します。
-6. setShortValue(,)を呼び出しSD19を1にしirBoardからの書き込みを許可します。
+6. <del/>setShortValue(,)を呼び出しSD19を1にしirBoardからの書き込みを許可します。</del>irBoardβ版で従来の論理と逆になっていたため不要になります。
+
 
 
 ```
@@ -36,7 +37,7 @@ void setup() {
     irboard.addAP(ssid, password);      // 3
     irboard.setVerbose(true);           // 4
     irboard.begin();                    // 5
-    irboard.setShortValue("SD19", 1);   // 6
+    // irboard.setShortValue("SD19", 1);   // 6 不要
 }
 ```
 
