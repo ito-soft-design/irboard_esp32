@@ -94,12 +94,12 @@ irBoardについては公式サイトやドキュメンをご覧ください。
 
 [irBoard](https://irboard.itosoft.com)
 
-[ドキュメント](https://irboard.itosoft.com/document/ja/document.html)
+[ドキュメント](https://irboard.itosoft.com/ja/document/document)
 
 
 ### TODO
 
-- textの扱い
+- <s>textの扱い</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd)で対応
 
 ### ライセンス
 
