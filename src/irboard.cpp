@@ -439,6 +439,53 @@ void Irboard::setFloatValue(std::string dev, float value)
     setIntValue(dev, *((int *)&value));
 }
 
+String Irboard::stringValue(std::string dev, int maxSize)
+{
+    int size = (maxSize + 1) / 2;
+    uint16_t *ptr = vptr_for_dev(dev, size);
+    String str = String();
+    if (ptr) {
+        for (int i = 0; i < size; i++) {
+            char l = *ptr & 0xff;
+            char h = *ptr >> 8;
+            if (l != '\0') {
+                str += l;
+            } else {
+                break;
+            }
+            if (h != '\0') {
+                str += h;
+            } else {
+                break;
+            }
+            ptr++;
+        }
+    }
+    return str;
+}
+
+void Irboard::setStringValue(std::string dev, String value, int maxSize)
+{
+    int len = value.length();
+    int size = (min(len, maxSize == 0 ? len : maxSize) + 1) / 2;
+    uint16_t *ptr = vptr_for_dev(dev, size);
+    if (ptr) {
+        uint16_t word_value = 0;
+        const char *str_ptr = value.c_str();
+        char ch;
+        for (int i = 0; i < size; i++) {
+            int idx = i * 2;
+            ch = idx < len ? str_ptr[idx] : 0;
+            word_value = ch;
+            idx++;
+            ch = idx < len ? str_ptr[idx] : 0;
+            word_value |= (uint16_t)ch << 8;
+            *ptr++ = word_value;
+        }
+    }
+}
+
+
 uint16_t *Irboard::vptr_for_dev(std::string dev, int size)
 {
     _sd_dev = false;

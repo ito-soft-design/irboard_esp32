@@ -21,6 +21,9 @@ static short color_r = 0;
 static short color_g = 0;
 static short color_b = 0;
 
+#define TEXT_MAX_LENGTH     32
+static String text = "Hello, world.";
+
 void config_board() {
     switch(M5.getBoard()) {
     case m5gfx::board_t::board_M5StickC:
@@ -64,6 +67,7 @@ void setup() {
 
     // show IP address to the terminal when it's established connection.
     irboard.setVerbose(true);
+    irboard.setStringValue("D4", text, TEXT_MAX_LENGTH);
 
     // configure wifi connection
 #ifdef ACTS_AS_AP_MODE
@@ -100,6 +104,9 @@ void display_info()
             M5.Display.println("");
             M5.Display.print("A: ");
             M5.Display.println(value_a);
+
+            M5.Display.print("T: ");
+            M5.Display.println(text);
         }
         break;
 
@@ -137,6 +144,8 @@ void loop() {
     color_r = irboard.shortValue("D1");
     color_g = irboard.shortValue("D2");
     color_b = irboard.shortValue("D3");
+
+    text = irboard.stringValue("D4", TEXT_MAX_LENGTH);
 
     if (irboard.isChanged()) {
         display_info();

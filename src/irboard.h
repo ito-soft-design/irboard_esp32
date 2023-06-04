@@ -76,6 +76,8 @@ class Irboard {
         void setIntValue(std::string dev, int value);
         float floatValue(std::string dev);
         void setFloatValue(std::string dev, float value);
+        String stringValue(std::string dev, int maxSize);
+        void setStringValue(std::string dev, String value, int maxSize=0);
 
         bool isChanged() { return _changed; }
 
