@@ -125,7 +125,7 @@ void Irboard::state_connecting()
 #endif
         if (_verbose) {
             if (_apMode) {
-                Serial.print(WiFi.softAPIP());
+                Serial.println(WiFi.softAPIP());
             } else {
                 Serial.println(WiFi.SSID());
                 Serial.println(WiFi.localIP());
