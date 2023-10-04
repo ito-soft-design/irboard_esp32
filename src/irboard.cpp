@@ -33,6 +33,13 @@ Irboard::Irboard(int portno)
 #ifdef IRBOARD_DEBUG
     Serial.println("initial");
 #endif
+    // clear the device values
+    memset(devX, 0, sizeof(uint16_t) * IRBOARD_SIZE_X);
+    memset(devY, 0, sizeof(uint16_t) * IRBOARD_SIZE_Y);
+    memset(devM, 0, sizeof(uint16_t) * IRBOARD_SIZE_M);
+    memset(devH, 0, sizeof(uint16_t) * IRBOARD_SIZE_H);
+    memset(devD, 0, sizeof(uint16_t) * IRBOARD_SIZE_D);
+    memset(devSd, 0, sizeof(uint16_t) * IRBOARD_SIZE_SD);
 }
 
 bool Irboard::addAP(const char* ssid, const char *passphrase)
