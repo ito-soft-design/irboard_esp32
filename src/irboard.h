@@ -59,6 +59,7 @@ class Irboard {
     public:
         Irboard(int portNo = 5555);
         void begin(bool apMode = false);
+        void terminate();
         void update();
         int state() { return _state; }
         int portNo() { return _portNo; }
@@ -107,7 +108,6 @@ class Irboard {
         void state_connected();
         void state_closed();
         bool check_connection();
-        void terminate();
         std::string response(std::string str);
         std::string rds_response(std::string opcode);
         std::string rd_response(std::string opcode);
