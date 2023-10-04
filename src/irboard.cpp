@@ -30,6 +30,7 @@ Irboard::Irboard(int portno)
 {
     _portNo = portno;
     _state = IRBOARD_STATE_INITIAL;
+    _numOfAp = 0;
 #ifdef IRBOARD_DEBUG
     Serial.println("initial");
 #endif
@@ -44,6 +45,7 @@ Irboard::Irboard(int portno)
 
 bool Irboard::addAP(const char* ssid, const char *passphrase)
 {
+  _numOfAp++;
   return _wifiMulti.addAP(ssid, passphrase);
 }
 
@@ -52,6 +54,9 @@ void Irboard::begin(bool apMode)
     terminate();
     _apMode = apMode;
     _recBuf = "";
+    if (_apMode || _numOfAp == 0) {
+        WiFi.begin();
+    }
 }
 
 void Irboard::update()
@@ -98,9 +103,18 @@ void Irboard::state_initial()
 #endif
 }
 
+uint8_t Irboard::run()
+{
+    if (_numOfAp == 0) {
+        return WiFi.status();
+    } else {
+        return _wifiMulti.run();
+    }
+}
+
 void Irboard::state_connecting()
 {
-    if (_apMode || _wifiMulti.run() == WL_CONNECTED) {
+    if (_apMode || run() == WL_CONNECTED) {
         if (_server == false) {
             _server = WiFiServer(_portNo, 1);
             _server.begin();
@@ -123,7 +137,7 @@ void Irboard::state_connecting()
 bool Irboard::check_connection()
 {
     if (_apMode) return true;
-    if (_wifiMulti.run() != WL_CONNECTED) {
+    if (run() != WL_CONNECTED) {
         terminate();
         return false;
     }

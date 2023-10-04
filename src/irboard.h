@@ -89,6 +89,7 @@ class Irboard {
         bool _sd_dev;
         bool _verbose;
         bool _apMode;
+        int _numOfAp;
 
         WiFiServer _server;
         WiFiClient _client;
@@ -108,6 +109,7 @@ class Irboard {
         void state_connected();
         void state_closed();
         bool check_connection();
+        uint8_t run();
         std::string response(std::string str);
         std::string rds_response(std::string opcode);
         std::string rd_response(std::string opcode);
