@@ -14,8 +14,9 @@ typedef enum
 static RunMode run_mode = RUN_MODE_UNKNOWN;
 
 // irBaord
-#define SETUP_WIFI_SSID         "IRBOARD DEMO"
-#define SETUP_WIFI_PASSWORD     "IRBOARD DEMO"
+#define SETUP_WIFI_SSID         "irBoard ESP32"
+#define SETUP_WIFI_PASSWORD     "password"
+
 Irboard *irboard = new Irboard();
 
 
