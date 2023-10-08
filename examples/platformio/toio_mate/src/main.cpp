@@ -1,7 +1,4 @@
 #include <Arduino.h>
-
-#define Serial   USBSerial
-
 #include <M5Unified.h>
 #include <Toio.h>
 #include <irboard.h>
@@ -228,7 +225,6 @@ void setup() {
     // configure wifi connection
 #ifdef ACTS_AS_AP_MODE
     WiFi.softAP(ssid, password);
-    Serial.print(WiFi.softAPIP());
      // If set true, it acts as the ap mode.
     irboard.begin(true);
 #else
