@@ -96,9 +96,9 @@ void loop() {
     - [M5Stack Basic](examples/irboard_m5stack)
     - [M5Stick-C](examples/irboard_m5stickc)
 - PlatformIO
-    - [Basic (Arduino IDEのExampeと同じです)](examples/platformio/basic)
-    - [irBoardからATOM Mate for toioをコントロールできます。](examples/platformio/toio_mate)
-    - [irBoardからWiFiの設定ができます。](examples/platformio/wifi_setup)
+    - [Basic (Arduino IDEのExampeと同じです)](examples/platformio_irboard_basic)
+    - [irBoardからATOM Mate for toioをコントロールできます。](examples/platformio_irboard_toio_mate)
+    - [irBoardからWiFiの設定ができます。](examples/platformio_irboard_wifi_setup)
 
 
 ## irBoardについて

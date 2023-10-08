@@ -95,9 +95,9 @@ void loop() {
     - [for M5Stack Basic](examples/irboard_m5stack)
     - [for M5Stick-C](examples/irboard_m5stickc)
 - PlatformIO
-    - [Basic (It's the same as Arduino IDE)](examples/platformio/basic)
-    - [Control ATOM Mate for toio from irBoard](examples/platformio/toio_mate)
-    - [WiFi setup with irBoard](examples/platformio/wifi_setup)
+    - [Basic (It's the same as Arduino IDE)](examples/platformio_irboard_basic)
+    - [Control ATOM Mate for toio from irBoard](examples/platformio_irboard_toio_mate)
+    - [WiFi setup with irBoard](examples/platformio_irboard_wifi_setup)
 
 ## About irBoard
 
