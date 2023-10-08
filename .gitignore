@@ -1,1 +1,4 @@
 c_cpp_properties.json
+examples/irboard_m5stack/debug.cfg
+examples/irboard_m5stack/debug_custom.json
+examples/irboard_m5stack/esp32.svd
