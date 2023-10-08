@@ -1,5 +1,7 @@
 # irBoard Library for ESP32
 
+[(To English)](./README.md)
+
 irBoard Library for ESP32はiOSアプリirBoardからESP32デバイスに接続し、デバイスの操作やモニター、設定などができるようにするためのArduino IDE向けのライブラリーです。
 
 irBoardはiPodやiPhoneを[PLC(Programable logic controller)](https://ja.wikipedia.org/wiki/プログラマブルロジックコントローラ)向けの、タッチパネルディスプレイとして利用できるiOSアプリケーションです。
@@ -86,9 +88,22 @@ void loop() {
 
 ```
 
-## About irBoard
+## Examples
 
-For more information about irBoard, please visit the official website and documentation.  
+- Arduino IDE  
+  M5デバイスの画面の色やLEDをirBoardから変えたり、M5デバイスでボタンが押されたのを表示します。
+    - [M5Atom](examples/irboard_m5atom)
+    - [M5Stack Basic](examples/irboard_m5stack)
+    - [M5Stick-C](examples/irboard_m5stickc)
+- PlatformIO
+    - [Basic (Arduino IDEのExampeと同じです)](examples/platformio/basic)
+    - [irBoardからATOM Mate for toioをコントロールできます。](examples/platformio/toio_mate)
+    - [irBoardからWiFiの設定ができます。](examples/platformio/wifi_setup)
+
+
+## irBoardについて
+
+ irBoardについては公式サイトやドキュメンをご覧ください。
 
 [irBoard](https://irboard.itosoft.com)
 
@@ -97,7 +112,7 @@ For more information about irBoard, please visit the official website and docume
 
 ### TODO
 
-- <s>Handling of text</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd)で対応
+- <s>textの扱い</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd)で対応
 
 ### ライセンス
 

@@ -1,5 +1,7 @@
 # irBoard Library for ESP32
 
+[(To Japanese)](./README_ja.md)
+
 irBoard Library for ESP32 is a library for Arduino IDE to connect to ESP32 devices from the iOS app irBoard and to be able to control, monitor, and configure the devices.
 
 irBoard is an iOS application that allows iPods and iPhones to be used as touch panel displays for [PLC(Programable logic controller)](https://ja.wikipedia.org/wiki/プログラマブルロジックコントローラ).
@@ -84,3 +86,32 @@ void loop() {
 }
 
 ```
+
+## Examples
+
+- Arduino IDE  
+  Change the color of the screen and LEDs on the M5 device from irBoard, or indicate that a button has been pressed on the M5 device.
+    - [for M5Atom](examples/irboard_m5atom)
+    - [for M5Stack Basic](examples/irboard_m5stack)
+    - [for M5Stick-C](examples/irboard_m5stickc)
+- PlatformIO
+    - [Basic (It's the same as Arduino IDE)](examples/platformio/basic)
+    - [Control ATOM Mate for toio from irBoard](examples/platformio/toio_mate)
+    - [WiFi setup with irBoard](examples/platformio/wifi_setup)
+
+## About irBoard
+
+For more information about irBoard, please visit the official website and documentation.  
+
+[irBoard](https://irboard.itosoft.com)
+
+[ドキュメント](https://irboard.itosoft.com/ja/document/document)
+
+
+### TODO
+
+- <s>Handling of text</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd) DONE
+
+### LICENSE
+
+[MIT](https://github.com/ito-soft-design/irboard_esp32/blob/master/LICENSE.txt)
