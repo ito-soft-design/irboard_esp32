@@ -105,14 +105,10 @@ void loop() {
 
  irBoardについては公式サイトやドキュメンをご覧ください。
 
-[irBoard](https://irboard.itosoft.com)
+[irBoard](https://irboard.itosoft.com/ja/)
 
 [ドキュメント](https://irboard.itosoft.com/ja/document/document)
 
-
-### TODO
-
-- <s>textの扱い</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd)で対応
 
 ### ライセンス
 

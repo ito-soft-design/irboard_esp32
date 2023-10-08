@@ -64,7 +64,7 @@ Since it is not a PLC, there is no device like this. The image is that there is 
 
 7. update() is used to send/receive data to/from irBoard and update the device value. 
 8. isChanged() can be used to check if the value has changed and update the screen, etc. when there is a change. 
-9. When reading values, call boolValue(), shortValue(), intValue(), or floatValue() with the device name, depending on the device type. intValue and floatValue use two words. If D0 is specified, D0 and the next D1 are connected and treated as 32 bits. 10.
+9. When reading values, call boolValue(), shortValue(), intValue(), or floatValue() with the device name, depending on the device type. intValue and floatValue use two words. If D0 is specified, D0 and the next D1 are connected and treated as 32 bits.
 10. setBoolValue(,), setShortValue(,), setIntValue(,), and setFloatValue(,) are used for writing.
 
 
@@ -103,14 +103,9 @@ void loop() {
 
 For more information about irBoard, please visit the official website and documentation.  
 
-[irBoard](https://irboard.itosoft.com)
+[irBoard](https://irboard.itosoft.com/en/)
 
-[ドキュメント](https://irboard.itosoft.com/ja/document/document)
-
-
-### TODO
-
-- <s>Handling of text</s>[#46713c7](https://github.com/ito-soft-design/irboard_esp32/commit/46713c71d39c52da17cc79c82fabd1a6e76b86dd) DONE
+[Document (Sorry we only have Japanese documents.)](https://irboard.itosoft.com/ja/document/document)
 
 ### LICENSE
 
