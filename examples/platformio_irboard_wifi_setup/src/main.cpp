@@ -40,7 +40,6 @@ static void display_info() {
     M5.Display.setCursor(0, 0);
     M5.Display.println(run_mode == RUN_MODE_SETUP ? "SETUP" : "NORMAL");
     M5.Display.println("IP:");
-    M5.Display.print("  ");
     if (run_mode == RUN_MODE_SETUP) {
         M5.Display.println(WiFi.softAPIP());
     } else {
