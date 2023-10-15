@@ -169,6 +169,7 @@ void Irboard::state_listen()
     _client = _server.available();
     if (_client) {
         set_state(IRBOARD_STATE_CONNECTED);
+        _recBuf = "";
 #ifdef IRBOARD_DEBUG
         Serial.println("connected");
 #endif
