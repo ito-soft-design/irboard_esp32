@@ -181,7 +181,7 @@ void Irboard::state_connected()
     if (check_connection() == false) { return; }
 
     if (_client.connected()) {
-        if (_client.available()) {
+        while (_client.available()) {
             char c = _client.read();
 #ifdef IRBOARD_DEBUG
             Serial.write(c);
