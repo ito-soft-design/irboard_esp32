@@ -31,6 +31,7 @@ Irboard::Irboard(int portno)
     _portNo = portno;
     _state = IRBOARD_STATE_INITIAL;
     _numOfAp = 0;
+    _timeout = 30000;
 #ifdef IRBOARD_DEBUG
     Serial.println("initial");
 #endif
@@ -169,6 +170,7 @@ void Irboard::state_listen()
     _client = _server.available();
     if (_client) {
         set_state(IRBOARD_STATE_CONNECTED);
+        _received_at = millis();
         _recBuf = "";
 #ifdef IRBOARD_DEBUG
         Serial.println("connected");
@@ -180,7 +182,9 @@ void Irboard::state_connected()
 {
     if (check_connection() == false) { return; }
 
-    if (_client.connected()) {
+    bool timeouted = millis() - _received_at >= _timeout;
+
+    if (!timeouted  && _client.connected()) {
         while (_client.available()) {
             char c = _client.read();
 #ifdef IRBOARD_DEBUG
@@ -195,6 +199,7 @@ void Irboard::state_connected()
                 Serial.println(r.c_str());
 #endif
                 _recBuf = "";
+                _received_at = millis();
             }
         }
     } else {

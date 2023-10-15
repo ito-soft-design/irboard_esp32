@@ -68,6 +68,8 @@ class Irboard {
 
         void setVerbose(bool verbose) { _verbose = verbose; }
         bool verbose() { return _verbose; }
+        bool timeout() { return _timeout; }
+        bool setTimeout(unsigned long timeout) { _timeout = timeout; }
  
         bool boolValue(std::string dev);
         void setBoolValue(std::string dev, bool value);
@@ -90,6 +92,8 @@ class Irboard {
         bool _verbose;
         bool _apMode;
         int _numOfAp;
+        unsigned long _timeout;
+        unsigned long _received_at;
 
         WiFiServer _server;
         WiFiClient _client;
