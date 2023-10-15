@@ -170,7 +170,7 @@ void loop()
     } else {
         wifi_connected = false;
     }
-    set_led(irboard->state() == WL_CONNECTED);
+    set_led(irboard->state() == IRBOARD_STATE_CONNECTED);
 
     // If you press the A button longer, turn it to setup mode.
     M5.update();
