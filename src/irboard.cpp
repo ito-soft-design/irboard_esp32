@@ -188,9 +188,8 @@ void Irboard::state_connected()
 #endif
             _recBuf += c;
             if (c == 0x0a) {
-                std::string r = response(_recBuf);
+                std::string r = response(_recBuf) + "\r\n";
                 _client.print(r.c_str());
-                _client.print("\r\n");
                 _client.flush();
 #ifdef IRBOARD_DEBUG
                 Serial.println(r.c_str());
