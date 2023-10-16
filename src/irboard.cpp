@@ -52,7 +52,6 @@ bool Irboard::addAP(const char* ssid, const char *passphrase)
 
 void Irboard::begin(bool apMode)
 {
-    terminate();
     _apMode = apMode;
     _recBuf = "";
     if (_apMode || _numOfAp == 0) {
@@ -159,6 +158,10 @@ void Irboard::terminate()
     if (_server) {
         _server.stopAll();
         _server.~WiFiServer();
+    }
+    if (_apMode) {
+        Serial.println("disable soft ap");
+        WiFi.softAPdisconnect(true);
     }
     WiFi.disconnect();
 }
