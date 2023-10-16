@@ -12,7 +12,7 @@ This library lets you control, monitor, and configure devices from your iPad or 
 
 ## Tutorial
 
-Please see the Qiit article on importing the library and connecting it to irBoard.
+Please see the Qiita article on importing the library and connecting it to irBoard.
 
 [We have created a library that can connect from irBoard to M5StickC and other devices. - Qiita - Japanese](https://qiita.com/katsuyoshi/items/5c850cd14e8e2ff47b4f)
 

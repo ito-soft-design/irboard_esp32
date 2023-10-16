@@ -12,7 +12,7 @@ irBoardはiPodやiPhoneを[PLC(Programable logic controller)](https://ja.wikiped
 
 ## チュートリアル
 
-ライブラリーのインポートやirBoardと接続するまでをQiitの記事に書いていますのでご覧ください。
+ライブラリーのインポートやirBoardと接続するまでをQiitaの記事に書いていますのでご覧ください。
 
 [irBoardからM5StickCなどに接続できるライブラリーを作りました - Qiita](https://qiita.com/katsuyoshi/items/5c850cd14e8e2ff47b4f)
 
