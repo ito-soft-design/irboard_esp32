@@ -36,10 +36,10 @@ Irboard::Irboard(int portno)
     Serial.println("initial");
 #endif
     // clear the device values
-    memset(devX, 0, sizeof(uint16_t) * IRBOARD_SIZE_X);
-    memset(devY, 0, sizeof(uint16_t) * IRBOARD_SIZE_Y);
-    memset(devM, 0, sizeof(uint16_t) * IRBOARD_SIZE_M);
-    memset(devH, 0, sizeof(uint16_t) * IRBOARD_SIZE_H);
+    memset(devX, 0, sizeof(uint16_t) * (IRBOARD_SIZE_X + 15) / 16);
+    memset(devY, 0, sizeof(uint16_t) * (IRBOARD_SIZE_Y + 15) / 16);
+    memset(devM, 0, sizeof(uint16_t) * (IRBOARD_SIZE_M + 15) / 16);
+    memset(devH, 0, sizeof(uint16_t) * (IRBOARD_SIZE_H + 15) / 16);
     memset(devD, 0, sizeof(uint16_t) * IRBOARD_SIZE_D);
     memset(devSd, 0, sizeof(uint16_t) * IRBOARD_SIZE_SD);
 }
@@ -266,8 +266,12 @@ std::string Irboard::rds_response(std::string opcode)
 
     std::string r = "";
 
-    uint16_t *ptr = vptr_for_dev(dev, num);
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, num, &bit);
     if (ptr == NULL) { return "E0"; }
+    if (bit >= 0) {
+        num = (num + 15) / 16;
+    }
 
     if (vBase == 10) {
         for (int i = 0; i < num; i++) {
@@ -309,7 +313,7 @@ std::string Irboard::rd_response(std::string opcode)
 
     std::string r = "";
 
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    uint16_t *ptr = vptr_for_dev(dev, 1, NULL);
     if (ptr == NULL) { return "E0"; }
 
     if (vBase == 10) {
@@ -345,8 +349,12 @@ std::string Irboard::wrs_response(std::string opcode)
 
     str = str.substr(p + 1);
 
-    uint16_t *ptr = vptr_for_dev(dev, num);
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, num, &bit);
     if (ptr == NULL) { return "E0"; }
+    if (bit >= 0) {
+        num = (num + 15) / 16;
+    }
 
     for (int i = 0; i < num - 1; i++) {
         p = str.find_first_of(" ");
@@ -376,7 +384,7 @@ std::string Irboard::wr_response(std::string opcode)
         dev = dev.substr(0, p);
     }
 
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    uint16_t *ptr = vptr_for_dev(dev, 1, NULL);
     if (ptr == NULL) { return "E0"; }
 
     *ptr = (uint16_t)strtol(str.c_str(), NULL, vBase);
@@ -388,10 +396,11 @@ std::string Irboard::wr_response(std::string opcode)
 std::string Irboard::st_response(std::string opcode)
 {
     std::string dev = opcode;
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, 1, &bit);
     if (ptr == NULL) { return "E0"; }
 
-    *ptr = 1;
+    *ptr |= (1 << bit);
     
     if (_sd_dev == false) _changed = true;
     return "OK";
@@ -400,10 +409,11 @@ std::string Irboard::st_response(std::string opcode)
 std::string Irboard::rs_response(std::string opcode)
 {
     std::string dev = opcode;
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, 1, &bit);
     if (ptr == NULL) { return "E0"; }
 
-    *ptr = 0;
+    *ptr &= ~(1 << bit);
     
     if (_sd_dev == false) _changed = true;
     return "OK";
@@ -411,27 +421,33 @@ std::string Irboard::rs_response(std::string opcode)
 
 bool Irboard::boolValue(std::string dev)
 {
-    uint16_t *ptr = vptr_for_dev(dev, 1);
-    return ptr ? *ptr != 0 : false;
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, 1, &bit);
+    return ptr ? (*ptr & (1 << bit)) != 0 : false;
 }
 
 void Irboard::setBoolValue(std::string dev, bool value)
 {
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    int bit = 0;
+    uint16_t *ptr = vptr_for_dev(dev, 1, &bit);
     if (ptr) {
-        *ptr = value ? 1 : 0;
+        if (value) {
+            *ptr |= (1 << bit);
+        } else {
+            *ptr &= ~(1 << bit);
+        }
     }
 }
 
 short Irboard::shortValue(std::string dev)
 {
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    uint16_t *ptr = vptr_for_dev(dev, 1, NULL);
     return ptr ? *ptr : 0;
 }
 
 void Irboard::setShortValue(std::string dev, short value)
 {
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    uint16_t *ptr = vptr_for_dev(dev, 1, NULL);
     if (ptr) {
         *ptr = value;
     }
@@ -440,7 +456,7 @@ void Irboard::setShortValue(std::string dev, short value)
 int Irboard::intValue(std::string dev)
 {
     unsigned int v = 0;
-    uint16_t *ptr = vptr_for_dev(dev, 2);
+    uint16_t *ptr = vptr_for_dev(dev, 2, NULL);
     if (ptr) {
         v = *(unsigned int *)ptr;
         // DELETEME: v |= (unsigned int)(*ptr << 16);
@@ -450,7 +466,7 @@ int Irboard::intValue(std::string dev)
 
 void Irboard::setIntValue(std::string dev, int value)
 {
-    uint16_t *ptr = vptr_for_dev(dev, 1);
+    uint16_t *ptr = vptr_for_dev(dev, 1, NULL);
     if (ptr) {
         *ptr++ = value;
         *ptr = value >> 16;
@@ -471,7 +487,7 @@ void Irboard::setFloatValue(std::string dev, float value)
 String Irboard::stringValue(std::string dev, int maxSize)
 {
     int size = (maxSize + 1) / 2;
-    uint16_t *ptr = vptr_for_dev(dev, size);
+    uint16_t *ptr = vptr_for_dev(dev, size, NULL);
     String str = String();
     if (ptr) {
         for (int i = 0; i < size; i++) {
@@ -497,7 +513,7 @@ void Irboard::setStringValue(std::string dev, String value, int maxSize)
 {
     int len = value.length();
     int size = (min(len, maxSize == 0 ? len : maxSize) + 1) / 2;
-    uint16_t *ptr = vptr_for_dev(dev, size);
+    uint16_t *ptr = vptr_for_dev(dev, size, NULL);
     if (ptr) {
         uint16_t word_value = 0;
         const char *str_ptr = value.c_str();
@@ -515,12 +531,15 @@ void Irboard::setStringValue(std::string dev, String value, int maxSize)
 }
 
 
-uint16_t *Irboard::vptr_for_dev(std::string dev, int size)
+uint16_t *Irboard::vptr_for_dev(std::string dev, int size, int *bit)
 {
     _sd_dev = false;
     std::string s2 = dev.substr(0, 2);
     int no2 = atoi(dev.substr(2).c_str());
     if (s2 == "SD") {
+        if (bit != NULL) {
+            *bit = -1;
+        }
         _sd_dev = true;
         if (no2 + size > IRBOARD_SIZE_SD) return NULL;
         return &(devSd[no2]);
@@ -528,20 +547,27 @@ uint16_t *Irboard::vptr_for_dev(std::string dev, int size)
 
     std::string s1 = dev.substr(0, 1);
     int no1 = atoi(dev.substr(1).c_str());
+    int idx = no1 / 16;
+    if (bit != NULL) {
+        *bit = no1 % 16;
+    }
     if (s1 == "X") {
         if (no1 + size > IRBOARD_SIZE_X) return NULL;
-        return &(devX[no1]);
+        return &(devX[idx]);
     } else if (s1 == "Y") {
         if (no1 + size > IRBOARD_SIZE_Y) return NULL;
-        return &(devY[no1]);
+        return &(devY[idx]);
     } else if (s1 == "M") {
         if (no1 + size > IRBOARD_SIZE_M) return NULL;
-        return &(devM[no1]);
+        return &(devM[idx]);
     } else if (s1 == "H") {
         if (no1 + size > IRBOARD_SIZE_H) return NULL;
-        return &(devH[no1]);
+        return &(devH[idx]);
     } else if (s1 == "D") {
         if (no1 + size > IRBOARD_SIZE_D) return NULL;
+        if (bit != NULL) {
+            *bit = -1;
+        }
         return &(devD[no1]);
     }
 

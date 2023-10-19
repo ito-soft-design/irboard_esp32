@@ -99,10 +99,10 @@ class Irboard {
         WiFiClient _client;
         WiFiMulti _wifiMulti;
         std::string _recBuf;
-        uint16_t devX[IRBOARD_SIZE_X];
-        uint16_t devY[IRBOARD_SIZE_Y];
-        uint16_t devM[IRBOARD_SIZE_M];
-        uint16_t devH[IRBOARD_SIZE_H];
+        uint16_t devX[(IRBOARD_SIZE_X + 15) / 16];
+        uint16_t devY[(IRBOARD_SIZE_Y + 15) / 16];
+        uint16_t devM[(IRBOARD_SIZE_M + 15) / 16];
+        uint16_t devH[(IRBOARD_SIZE_H + 15) / 16];
         uint16_t devD[IRBOARD_SIZE_D];
         uint16_t devSd[IRBOARD_SIZE_SD];
         
@@ -121,7 +121,7 @@ class Irboard {
         std::string wr_response(std::string opcode);
         std::string st_response(std::string opcode);
         std::string rs_response(std::string opcode);
-        uint16_t *vptr_for_dev(std::string dev, int size);
+        uint16_t *vptr_for_dev(std::string dev, int size, int *bit);
 };
 
 #endif
